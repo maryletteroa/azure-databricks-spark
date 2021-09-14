@@ -7,7 +7,7 @@ exercises on spark in azure databricks
 scripts are integrated with the Databricks workspace
 
 ## Dates
-Started - 13 September 2021
+Started - 13 September 2021  
 End -
 
 ## Reference
