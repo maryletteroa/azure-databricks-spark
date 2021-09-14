@@ -1,5 +1,4 @@
 # azure-databricks-spark
-introductory exercises on spark on azure databricks
 
 "Playground" directory is integrated with the Azure Databricks workspace
 
