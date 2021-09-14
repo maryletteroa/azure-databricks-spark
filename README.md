@@ -1,7 +1,7 @@
 # azure-databricks-spark
 
 ## About
-introductory exercises on spark in azure databricks 
+exercises on spark in azure databricks 
 
 ## Details
 
