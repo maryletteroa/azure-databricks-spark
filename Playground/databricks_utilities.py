@@ -1,6 +1,11 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # dbutils commands
+# MAGIC * File Sytem Utilities
+# MAGIC * Notebook workflow utilities
+# MAGIC * Widget Utilities
+# MAGIC * Secrets Utilities
+# MAGIC * Library Utilities / %pip commands
 
 # COMMAND ----------
 
@@ -44,4 +49,9 @@ dbutils.notebook.run("./child_notebook", 10, {"input": "Called from main noteboo
 
 # COMMAND ----------
 
+# MAGIC %md 
+# MAGIC # library utilities
 
+# COMMAND ----------
+
+# MAGIC %pip install pandas
