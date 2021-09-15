@@ -179,3 +179,27 @@ display(circuits_final_df)
 # select all except env
 circuits_final_df = circuits_final_df.select("circuit_id", "circuit_ref", "name", "location", "country", "latitude", "longitude", "altitude", "ingestion_date")
 display(circuits_final_df)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Step 5 - Write data to datalake as parquet
+
+# COMMAND ----------
+
+# pass overwrite so we can re-run the notebook without terminating (file alrady exists)
+
+circuits_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/circuits")
+
+# COMMAND ----------
+
+# MAGIC %fs
+# MAGIC ls /mnt/formula1dlmr/processed/circuits
+
+# COMMAND ----------
+
+df = spark.read.parquet("/mnt/formula1dlmr/processed/circuits")
+
+# COMMAND ----------
+
+display(df)
