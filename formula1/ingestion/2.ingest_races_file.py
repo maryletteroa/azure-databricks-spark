@@ -4,7 +4,7 @@
 
 # COMMAND ----------
 
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, TimestampType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType
 
 # COMMAND ----------
 
@@ -13,23 +13,21 @@ races_schema = StructType(fields = [StructField("raceId", IntegerType(), False),
   StructField("round", IntegerType(), True),
   StructField("circuitId", IntegerType(), False),
   StructField("name", StringType(), True),
-  StructField("date", TimestampType(), True),
-  StructField("time", TimestampType(), True),
+  StructField("date", DateType(), True),
+  StructField("time", StringType(), True),
   StructField("url", StringType(), True),
 ])
 
 # COMMAND ----------
 
-df = spark.read \
+races_df = spark.read \
 .option("header", True) \
 .schema(races_schema) \
 .csv("/mnt/formula1dlmr/raw/races.csv")
 
-df.show()
-
 # COMMAND ----------
 
-df.printSchema()
+display(races_df)
 
 # COMMAND ----------
 
@@ -42,14 +40,16 @@ from pyspark.sql.functions import col, to_timestamp, lit, concat, current_timest
 
 # COMMAND ----------
 
-# df.withColumn("race_timestamp", concat(col("date"), lit(" "), col("time"))).show()
-df  = df.withColumn("race_timestamp", to_timestamp(concat(col("date"), lit(" "), col("time")))) \
+races_df  = races_df.withColumn("race_timestamp", to_timestamp(concat(col("date"), lit(" "), col("time")))) \
 .withColumn("ingestion_date", current_timestamp())
-df.show()
 
 # COMMAND ----------
 
-races_final_df = df.select(col("raceId").alias("race_id"),
+display(races_df)
+
+# COMMAND ----------
+
+races_final_df = races_df.select(col("raceId").alias("race_id"),
   col("year").alias("race_year"),
   col("round"),
   col("circuitId").alias("circuit_id"),
@@ -58,7 +58,9 @@ races_final_df = df.select(col("raceId").alias("race_id"),
   col("ingestion_date")
 )
 
-races_df_final.show()
+# COMMAND ----------
+
+display(races_final_df)
 
 # COMMAND ----------
 
