@@ -73,11 +73,16 @@ races_final_df.printSchema()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 3 - Write csv file
+# MAGIC #### Step 3 - Write output to processed container in parquet format
 
 # COMMAND ----------
 
-races_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/races")
+# partition output by race_year
+# data are written into separate folders by year
+
+races_final_df.write.mode("overwrite") \
+  .partitionBy("race_year") \
+  .parquet("/mnt/formula1dlmr/processed/races")
 
 # COMMAND ----------
 
@@ -87,3 +92,7 @@ races_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/race
 # COMMAND ----------
 
 display(spark.read.parquet("/mnt/formula1dlmr/processed/races"))
+
+# COMMAND ----------
+
+
