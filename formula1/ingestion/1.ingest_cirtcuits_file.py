@@ -90,7 +90,7 @@ circuits_df.describe().show()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Step 2 - Select only the required columns
+# MAGIC #### Step 2 - Select only the required columns
 
 # COMMAND ----------
 
@@ -137,7 +137,7 @@ display(circuits_selected_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Step 3 - Rename the columns as required
+# MAGIC #### Step 3 - Rename the columns as required
 
 # COMMAND ----------
 
@@ -198,8 +198,4 @@ circuits_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/c
 
 # COMMAND ----------
 
-df = spark.read.parquet("/mnt/formula1dlmr/processed/circuits")
-
-# COMMAND ----------
-
-display(df)
+display(spark.read.parquet("/mnt/formula1dlmr/processed/circuits"))
