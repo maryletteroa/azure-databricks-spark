@@ -90,7 +90,7 @@ circuits_df.describe().show()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Select only the required columns
+# MAGIC ### Step 2 - Select only the required columns
 
 # COMMAND ----------
 
@@ -133,3 +133,22 @@ circuits_selected_df = circuits_df.select(col("circuitId"), col("circuitRef"), c
 # COMMAND ----------
 
 display(circuits_selected_df)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Step 3 - Rename the columns as required
+
+# COMMAND ----------
+
+# aside from .alias()
+circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circuit_id") \
+  .withColumnRenamed("circuitRef", "circuit_ref") \
+.withColumnRenamed("race_country", "country") \
+  .withColumnRenamed("lat", "latitude") \
+  .withColumnRenamed("lng", "longitude") \
+  .withColumnRenamed("alt", "altitude")
+
+# COMMAND ----------
+
+display(circuits_renamed_df)
