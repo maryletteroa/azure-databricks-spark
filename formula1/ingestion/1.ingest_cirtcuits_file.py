@@ -152,3 +152,30 @@ circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circ
 # COMMAND ----------
 
 display(circuits_renamed_df)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Step 4 - Add ingestion date to the dataframe
+
+# COMMAND ----------
+
+from pyspark.sql.functions import current_timestamp, lit
+
+# COMMAND ----------
+
+# current_timestamp() returns a column object 
+# lit() as a literal object as column
+
+circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_timestamp()) \
+.withColumn("env", lit("Production"))
+
+# COMMAND ----------
+
+display(circuits_final_df)
+
+# COMMAND ----------
+
+# select all except env
+circuits_final_df = circuits_final_df.select("circuit_id", "circuit_ref", "name", "location", "country", "latitude", "longitude", "altitude", "ingestion_date")
+display(circuits_final_df)
