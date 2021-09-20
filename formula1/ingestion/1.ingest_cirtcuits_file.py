@@ -9,6 +9,12 @@
 
 # COMMAND ----------
 
+# cannot combine two %runs in a single cell
+
+%run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CSV file using the spark dataframe reader
 
@@ -112,21 +118,10 @@ circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circ
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp, lit
-
-# COMMAND ----------
-
 # current_timestamp() returns a column object 
 # lit() as a literal object as column
 
-circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_timestamp()) \
-.withColumn("env", lit("Production"))
-
-# COMMAND ----------
-
-# select all except env
-circuits_final_df = circuits_final_df.select("circuit_id", "circuit_ref", "name", "location", "country", "latitude", "longitude", "altitude", "ingestion_date")
-display(circuits_final_df)
+circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # COMMAND ----------
 
