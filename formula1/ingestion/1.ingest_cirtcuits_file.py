@@ -5,6 +5,10 @@
 
 # COMMAND ----------
 
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CSV file using the spark dataframe reader
 
@@ -17,7 +21,7 @@
 circuits_df = spark.read \
 .option("header", True) \
 .option("inferSchema", True) \
-.csv("dbfs:/mnt/formula1dlmr/raw/circuits.csv")
+.csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -133,4 +137,4 @@ display(circuits_final_df)
 
 # pass overwrite so we can re-run the notebook without terminating (file alrady exists)
 
-circuits_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/circuits")
+circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
