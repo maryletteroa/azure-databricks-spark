@@ -1,5 +1,23 @@
 # Databricks notebook source
 # MAGIC %md
+# MAGIC ### Ingest races.csv file
+
+# COMMAND ----------
+
+dbutils.widgets.text("p_data_source", "")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC #### Step 1 - Read races.csv file
 
 # COMMAND ----------
@@ -23,11 +41,7 @@ races_schema = StructType(fields = [StructField("raceId", IntegerType(), False),
 races_df = spark.read \
 .option("header", True) \
 .schema(races_schema) \
-.csv("/mnt/formula1dlmr/raw/races.csv")
-
-# COMMAND ----------
-
-display(races_df)
+.csv(f"{raw_folder_path}/races.csv")
 
 # COMMAND ----------
 
@@ -36,39 +50,26 @@ display(races_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import col, to_timestamp, lit, concat, current_timestamp
+from pyspark.sql.functions import col, to_timestamp, lit, concat
 
 # COMMAND ----------
 
-races_df  = races_df.withColumn("race_timestamp", to_timestamp(concat(col("date"), lit(" "), col("time")))) \
-.withColumn("ingestion_date", current_timestamp())
+races_df  = races_df.withColumn("race_timestamp", to_timestamp(concat(col("date"), lit(" "), col("time"))))
 
 # COMMAND ----------
 
-display(races_df)
-
-# COMMAND ----------
-
-races_final_df = races_df.select(col("raceId").alias("race_id"),
+races_df = races_df.select(col("raceId").alias("race_id"),
   col("year").alias("race_year"),
   col("round"),
   col("circuitId").alias("circuit_id"),
   col("name"),
   col("race_timestamp"),
-  col("ingestion_date")
-)
+) \
+.withColumn("data_source", lit(v_data_source))
 
 # COMMAND ----------
 
-display(races_final_df)
-
-# COMMAND ----------
-
-races_final_df.describe().show()
-
-# COMMAND ----------
-
-races_final_df.printSchema()
+races_final_df = add_ingestion_date(races_df)
 
 # COMMAND ----------
 
@@ -82,17 +83,8 @@ races_final_df.printSchema()
 
 races_final_df.write.mode("overwrite") \
   .partitionBy("race_year") \
-  .parquet("/mnt/formula1dlmr/processed/races")
+  .parquet(f"{processed_folder_path}/races")
 
 # COMMAND ----------
 
-# MAGIC %fs
-# MAGIC ls /mnt/formula1dlmr/processed/races
-
-# COMMAND ----------
-
-display(spark.read.parquet("/mnt/formula1dlmr/processed/races"))
-
-# COMMAND ----------
-
-
+dbutils.notebook.exit("Success")

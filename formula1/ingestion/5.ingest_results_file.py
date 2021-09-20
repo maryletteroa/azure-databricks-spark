@@ -4,6 +4,19 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source", "")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read json file
 
@@ -37,7 +50,7 @@ results_schema = StructType(fields = [StructField("resultId", IntegerType(), Fal
 
 results_df = spark.read \
 .schema(results_schema) \
-.json("/mnt/formula1dlmr/raw/results.json")
+.json(f"{raw_folder_path}/results.json")
 
 # COMMAND ----------
 
@@ -46,7 +59,7 @@ results_df = spark.read \
 
 # COMMAND ----------
 
-from pyspark.sql.functions import col, current_timestamp
+from pyspark.sql.functions import col, lit
 
 # COMMAND ----------
 
@@ -59,8 +72,12 @@ results_final_df = results_df.withColumnRenamed("resultId", "result_id") \
     .withColumnRenamed("fastestLap", "fastest_lap") \
     .withColumnRenamed("fastestLapTime", "fastest_lap_time") \
     .withColumnRenamed("fastestLapSpeed", "fastest_lap_speed") \
-    .drop(col("statusId")) \
-    .withColumn("ingestion_date", current_timestamp())
+    .drop(col("statusId"))\
+    .withColumn("data_source", lit(v_data_source))
+
+# COMMAND ----------
+
+results_final_df = add_ingestion_date(results_final_df)
 
 # COMMAND ----------
 
@@ -71,4 +88,8 @@ results_final_df = results_df.withColumnRenamed("resultId", "result_id") \
 
 results_final_df.write.mode("overwrite")\
 .partitionBy("race_id") \
-.parquet("/mnt/formula1dlmr/processed/results")
+.parquet(f"{processed_folder_path}/results")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")

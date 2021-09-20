@@ -4,6 +4,19 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source", "")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/configuration"
+
+# COMMAND ----------
+
+# MAGIC %run "../includes/common_functions"
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CSV file using the spark dataframe reader API
 
@@ -27,7 +40,7 @@ lap_times_schema = StructType(fields = [StructField("raceId", IntegerType(), Fal
 
 lap_times_df = spark.read \
 .schema(lap_times_schema) \
-.csv("/mnt/formula1dlmr/raw/lap_times") # specify folder containing csvs
+.csv(f"{raw_folder_path}/lap_times") # specify folder containing csvs
         # can also specify path with regex "/mnt/formula1dlmr/raw/lap_times/lap_times_split*.csv"
 
 # COMMAND ----------
@@ -39,13 +52,17 @@ lap_times_df = spark.read \
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp
+from pyspark.sql.functions import lit
 
 # COMMAND ----------
 
 final_df = lap_times_df.withColumnRenamed("driverId", "driver_id") \
 .withColumnRenamed("raceId", "race_id") \
-.withColumn("ingestion_date", current_timestamp())
+.withColumn("data_source", lit(v_data_source))
+
+# COMMAND ----------
+
+final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
@@ -54,4 +71,8 @@ final_df = lap_times_df.withColumnRenamed("driverId", "driver_id") \
 
 # COMMAND ----------
 
-final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/lap_times")
+final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/lap_times")
+
+# COMMAND ----------
+
+dbutils.notebook.exit("Success")

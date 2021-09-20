@@ -62,7 +62,7 @@ circuits_schema = StructType(fields = [StructField("circuitId", IntegerType(), F
 circuits_df = spark.read \
 .option("header", True) \
 .schema(circuits_schema) \
-.csv("dbfs:/mnt/formula1dlmr/raw/circuits.csv")
+.csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -141,10 +141,6 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 # pass overwrite so we can re-run the notebook without terminating (file alrady exists)
 
 circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
-
-# COMMAND ----------
-
-display(spark.read.parquet(f"{processed_folder_path}/circuits"))
 
 # COMMAND ----------
 
