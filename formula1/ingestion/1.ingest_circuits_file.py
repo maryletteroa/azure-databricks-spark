@@ -144,5 +144,9 @@ circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circ
 
 # COMMAND ----------
 
+display(spark.read.parquet(f"{processed_folder_path}/circuits"))
+
+# COMMAND ----------
+
 # add Success as exit value if notebook runs successfully
 dbutils.notebook.exit("Success")

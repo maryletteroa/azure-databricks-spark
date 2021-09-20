@@ -92,4 +92,8 @@ results_final_df.write.mode("overwrite")\
 
 # COMMAND ----------
 
+display(spark.read.parquet(f"{processed_folder_path}/results"))
+
+# COMMAND ----------
+
 dbutils.notebook.exit("Success")

@@ -79,4 +79,8 @@ constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/c
 
 # COMMAND ----------
 
+display(spark.read.parquet(f"{processed_folder_path}/constructors"))
+
+# COMMAND ----------
+
 dbutils.notebook.exit("Success")

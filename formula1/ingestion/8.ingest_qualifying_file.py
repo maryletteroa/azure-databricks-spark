@@ -80,4 +80,8 @@ final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
 
 # COMMAND ----------
 
+display(spark.read.parquet(f"{processed_folder_path}/lap_times"))
+
+# COMMAND ----------
+
 dbutils.notebook.exit("Success")

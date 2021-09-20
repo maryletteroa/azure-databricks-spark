@@ -103,4 +103,8 @@ drivers_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drive
 
 # COMMAND ----------
 
+display(spark.read.parquet(f"{processed_folder_path}/drivers"))
+
+# COMMAND ----------
+
 dbutils.notebook.exit("Success")
