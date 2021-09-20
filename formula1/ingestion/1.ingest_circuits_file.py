@@ -5,13 +5,20 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_data_source", "")
+v_data_source = dbutils.widgets.get("p_data_source")
+
+# COMMAND ----------
+
+v_data_source
+
+# COMMAND ----------
+
 # MAGIC %run "../includes/configuration"
 
 # COMMAND ----------
 
-# cannot combine two %runs in a single cell
-
-%run "../includes/common_functions"
+# MAGIC %run "../includes/common_functions"
 
 # COMMAND ----------
 
@@ -103,13 +110,18 @@ circuits_selected_df = circuits_df.select(col("circuitId"), col("circuitRef"), c
 
 # COMMAND ----------
 
+from pyspark.sql.functions import lit
+
+# COMMAND ----------
+
 # aside from .alias()
 circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circuit_id") \
   .withColumnRenamed("circuitRef", "circuit_ref") \
 .withColumnRenamed("race_country", "country") \
   .withColumnRenamed("lat", "latitude") \
   .withColumnRenamed("lng", "longitude") \
-  .withColumnRenamed("alt", "altitude")
+  .withColumnRenamed("alt", "altitude") \
+  .withColumn("data_source", lit(v_data_source))
 
 # COMMAND ----------
 
