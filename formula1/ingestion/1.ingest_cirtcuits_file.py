@@ -5,17 +5,6 @@
 
 # COMMAND ----------
 
-# show mounth points
-display(dbutils.fs.mounts())
-
-# COMMAND ----------
-
-# show contents of raw folder
-%fs
-ls /mnt/formula1dlmr/raw
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CSV file using the spark dataframe reader
 
@@ -64,31 +53,6 @@ circuits_df = spark.read \
 
 # COMMAND ----------
 
-# determine data type of objects
-type(circuits_df)
-
-# COMMAND ----------
-
-# list top 20 records (default)
-circuits_df.show()
-
-# COMMAND ----------
-
-# print object as a formatted table
-display(circuits_df)
-
-# COMMAND ----------
-
-# print schema
-circuits_df.printSchema()
-
-# COMMAND ----------
-
-# show summary statistics
-circuits_df.describe().show()
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC #### Step 2 - Select only the required columns
 
@@ -96,19 +60,15 @@ circuits_df.describe().show()
 
 # by specifying columns as string
 
-circuits_selected_df = circuits_df.select("circuitId", "circuitRef", "name", "location", "country", "lat", "lng", "alt")
-
-# COMMAND ----------
+# circuits_selected_df = circuits_df.select("circuitId", "circuitRef", "name", "location", "country", "lat", "lng", "alt")
 
 # by using dot notation
 
-circuits_selected_df = circuits_df.select(circuits_df.circuitId, circuits_df.circuitRef, circuits_df.name, circuits_df.location, circuits_df.country, circuits_df.lat, circuits_df.lng, circuits_df.alt)
-
-# COMMAND ----------
+# circuits_selected_df = circuits_df.select(circuits_df.circuitId, circuits_df.circuitRef, circuits_df.name, circuits_df.location, circuits_df.country, circuits_df.lat, circuits_df.lng, circuits_df.alt)
 
 # by passing as list
 
-circuits_selected_df = circuits_df.select(circuits_df["circuitId"], circuits_df["circuitRef"], circuits_df["name"], circuits_df["location"], circuits_df["country"], circuits_df["lat"], circuits_df["lng"], circuits_df["alt"])
+# circuits_selected_df = circuits_df.select(circuits_df["circuitId"], circuits_df["circuitRef"], circuits_df["name"], circuits_df["location"], circuits_df["country"], circuits_df["lat"], circuits_df["lng"], circuits_df["alt"])
 
 # COMMAND ----------
 
@@ -120,19 +80,11 @@ circuits_selected_df = circuits_df.select(col("circuitId"), col("circuitRef"), c
 
 # COMMAND ----------
 
-display(circuits_selected_df)
-
-# COMMAND ----------
-
 # first method only allows selecting the column
 # other methods allows further methods
 # e.g. changing the column name using .alias()
 
 circuits_selected_df = circuits_df.select(col("circuitId"), col("circuitRef"), col("name"), col("location"), col("country").alias("race_country"), col("lat"), col("lng"), col("alt"))
-
-# COMMAND ----------
-
-display(circuits_selected_df)
 
 # COMMAND ----------
 
@@ -148,10 +100,6 @@ circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circ
   .withColumnRenamed("lat", "latitude") \
   .withColumnRenamed("lng", "longitude") \
   .withColumnRenamed("alt", "altitude")
-
-# COMMAND ----------
-
-display(circuits_renamed_df)
 
 # COMMAND ----------
 
@@ -172,10 +120,6 @@ circuits_final_df = circuits_renamed_df.withColumn("ingestion_date", current_tim
 
 # COMMAND ----------
 
-display(circuits_final_df)
-
-# COMMAND ----------
-
 # select all except env
 circuits_final_df = circuits_final_df.select("circuit_id", "circuit_ref", "name", "location", "country", "latitude", "longitude", "altitude", "ingestion_date")
 display(circuits_final_df)
@@ -190,12 +134,3 @@ display(circuits_final_df)
 # pass overwrite so we can re-run the notebook without terminating (file alrady exists)
 
 circuits_final_df.write.mode("overwrite").parquet("/mnt/formula1dlmr/processed/circuits")
-
-# COMMAND ----------
-
-# MAGIC %fs
-# MAGIC ls /mnt/formula1dlmr/processed/circuits
-
-# COMMAND ----------
-
-display(spark.read.parquet("/mnt/formula1dlmr/processed/circuits"))
