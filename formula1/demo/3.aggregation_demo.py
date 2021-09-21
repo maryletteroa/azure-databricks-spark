@@ -49,6 +49,8 @@ demo_df.select(sum("points")).show()
 
 # COMMAND ----------
 
+# filter for one driver, and show total points
+
 demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points")).show()
 
 # COMMAND ----------
@@ -58,4 +60,25 @@ demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points")).show()
 demo_df.filter("driver_name = 'Lewis Hamilton'").select(sum("points"), countDistinct("race_name")) \
 .withColumnRenamed("sum(points)", "total_points") \
 .withColumnRenamed("count(DISTINCT race_name)", "number_of_races") \
+.show()
+
+# COMMAND ----------
+
+# apply group by for driver's name
+# returns a grouped data object
+
+demo_df \
+.groupBy("driver_name") \
+.sum("points") \
+.show()
+
+# COMMAND ----------
+
+# can't apply more than one aggregation i.e. sum + countdistinct
+# because sum returns a dataframe
+# use  agg instead
+
+demo_df \
+.groupBy("driver_name") \
+.agg(sum("points").alias("total_points"), countDistinct("race_name").alias("number_of_races")) \
 .show()
