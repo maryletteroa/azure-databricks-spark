@@ -36,7 +36,7 @@ constructors_df = spark.read.parquet(f"{processed_folder_path}/constructors") \
 
 results_df = spark.read.parquet(f"{processed_folder_path}/results") \
 .withColumnRenamed("time", "race_time") \
-.select("result_id", "race_id", "driver_id", "constructor_id", "grid", "fastest_lap", "race_time", "points")
+.select("result_id", "race_id", "driver_id", "constructor_id", "grid", "fastest_lap", "race_time", "points", "position")
 
 # COMMAND ----------
 
@@ -57,7 +57,7 @@ final_df = add_ingestion_date(final_df) \
 # COMMAND ----------
 
 # re-arrange columns according to requirements
-final_df = final_df.select("race_year", "race_name", "race_date", "circuit_location", "driver_name", "driver_number", "driver_nationality", "team", "grid", "fastest_lap", "race_time", "points", "created_date")
+final_df = final_df.select("race_year", "race_name", "race_date", "circuit_location", "driver_name", "driver_number", "driver_nationality", "team", "grid", "fastest_lap", "race_time", "points", "position", "created_date")
 
 # COMMAND ----------
 
