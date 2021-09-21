@@ -58,6 +58,10 @@ dbutils.fs.ls("/mnt/formula1dlmr/processed")
 
 # COMMAND ----------
 
+mount_adls("presentation")
+
+# COMMAND ----------
+
 dbutils.fs.mounts()
 
 # COMMAND ----------
