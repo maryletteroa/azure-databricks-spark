@@ -53,5 +53,48 @@ display(race_results_2019_df)
 # this is a temporary view
 # only valid during the session
 
+# use if the scope is just this notebook
+
 p_race_year = 2019
 race_results_2019_df = spark.sql(f"SELECT * FROM v_race_results WHERE race_year = {p_race_year}")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Global Temporary View
+# MAGIC 1. Create global temporary views on dataframes
+# MAGIC 2. Access the view from SQL cell
+# MAGIC 3. Access the view from Python cell
+# MAGIC 4. Access the view from another notebook
+
+# COMMAND ----------
+
+# Global temp view is available within the entire application
+# in the context of databricks, an application is all notebooks attached to the cluster
+# i.e. access even if cluster has been restarted (new session)
+
+# use if other notebooks is using this view
+
+# COMMAND ----------
+
+race_results_df.createOrReplaceGlobalTempView("gv_race_results")
+
+# COMMAND ----------
+
+# spark registers global views under global_temp db
+
+# COMMAND ----------
+
+# MAGIC %sql 
+# MAGIC SHOW TABLES IN global_temp;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT *
+# MAGIC FROM global_temp.gv_race_results
+
+# COMMAND ----------
+
+spark.sql("SELECT * \
+FROM global_temp.gv_race_results ").show()
