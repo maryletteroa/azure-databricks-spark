@@ -5,7 +5,3 @@ LOCATION "/mnt/formula1dlmr/presentation"
 -- COMMAND ----------
 
 DESC DATABASE f1_presentation;
-
--- COMMAND ----------
-
-
