@@ -140,11 +140,19 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 
 # pass overwrite so we can re-run the notebook without terminating (file alrady exists)
 
-circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+# circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
+
+# delete the data created without the save as method
+circuits_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.circuits")
 
 # COMMAND ----------
 
 display(spark.read.parquet(f"{processed_folder_path}/circuits"))
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.circuits;
 
 # COMMAND ----------
 

@@ -81,9 +81,11 @@ races_final_df = add_ingestion_date(races_df)
 # partition output by race_year
 # data are written into separate folders by year
 
-races_final_df.write.mode("overwrite") \
-  .partitionBy("race_year") \
-  .parquet(f"{processed_folder_path}/races")
+# races_final_df.write.mode("overwrite") \
+#   .partitionBy("race_year") \
+#   .parquet(f"{processed_folder_path}/races")
+
+races_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.races")
 
 # COMMAND ----------
 

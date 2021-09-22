@@ -75,7 +75,8 @@ constructor_final_df = add_ingestion_date(constructor_dropped_df \
 
 # COMMAND ----------
 
-constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
+# constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
+constructor_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructors")
 
 # COMMAND ----------
 
