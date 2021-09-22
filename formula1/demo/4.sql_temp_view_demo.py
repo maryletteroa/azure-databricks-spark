@@ -17,7 +17,9 @@ race_results_df = spark.read.parquet(f"{presentation_folder_path}/race_results")
 
 # COMMAND ----------
 
-race_results_df.createTempView("v_race_results")
+# race_results_df.createTempView("v_race_results") # error when notebook is run again because view already exists
+
+race_results_df.createOrReplaceTempView("v_race_results")
 
 # COMMAND ----------
 
