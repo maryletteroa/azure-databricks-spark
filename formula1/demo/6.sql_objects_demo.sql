@@ -138,3 +138,106 @@ SHOW TABLES IN demo;
 -- COMMAND ----------
 
 -- because it's a managed table, both data and metadata has been deleted
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ### Learning Objectives
+-- MAGIC 1. Create external table using Python
+-- MAGIC 2. Create external table using SQL
+-- MAGIC 3. Effect of dropping an external table
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC 
+-- MAGIC # specify path where data is to be written
+-- MAGIC # makes this an external table
+-- MAGIC 
+-- MAGIC race_results_df.write.format("parquet").option("path", f"{presentation_folder_path}/race_results_ext").saveAsTable("demo.race_results_ext_py")
+
+-- COMMAND ----------
+
+DESC EXTENDED demo.race_results_ext_py
+
+-- the type of the table is EXTERNAL
+
+-- COMMAND ----------
+
+CREATE TABLE demo.race_results_ext_sql
+(race_year INT,
+race_name STRING,
+race_date TIMESTAMP,
+circuit_location STRING,
+driver_name STRING,
+driver_number INT,
+driver_nationality STRING,
+team STRING,
+grid INT,
+fastest_lap INT,
+race_time STRING,
+points FLOAT,
+position INT,
+created_date TIMESTAMP
+)
+USING parquet
+LOCATION "/mnt/formula1dlmr/presentation/race_resuls_ext_sql"
+
+-- specify LOCATION for external tables
+-- just created table, no data yet
+
+-- COMMAND ----------
+
+SHOW TABLES IN demo;
+
+-- COMMAND ----------
+
+-- check documentation for Data Manipulations
+
+INSERT INTO demo.race_results_ext_sql
+SELECT * FROM demo.race_results_ext_py WHERE race_year = 2020;
+
+-- COMMAND ----------
+
+SELECT COUNT(1) FROM demo.race_results_ext_sql;
+
+-- COMMAND ----------
+
+SHOW TABLES IN demo;
+
+-- COMMAND ----------
+
+DROP TABLE demo.race_results_ext_sql
+
+-- COMMAND ----------
+
+SHOW TABLES IN demo;
+
+-- COMMAND ----------
+
+-- however data is still in the file system
+
+-- COMMAND ----------
+
+-- run the CREATE TABLE again but no need to insert data
+CREATE TABLE demo.race_results_ext_sql
+(race_year INT,
+race_name STRING,
+race_date TIMESTAMP,
+circuit_location STRING,
+driver_name STRING,
+driver_number INT,
+driver_nationality STRING,
+team STRING,
+grid INT,
+fastest_lap INT,
+race_time STRING,
+points FLOAT,
+position INT,
+created_date TIMESTAMP
+)
+USING parquet
+LOCATION "/mnt/formula1dlmr/presentation/race_resuls_ext_sql"
+
+-- specify LOCATION for external tables
+-- just created table, no data yet
