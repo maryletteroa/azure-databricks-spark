@@ -171,3 +171,61 @@ OPTIONS(path "/mnt/formula1dlmr/raw/pit_stops.json", multiLine true)
 -- COMMAND ----------
 
 SELECT * FROM f1_raw.pit_stops;
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ### Create Lap times table
+-- MAGIC - CSV files
+-- MAGIC - multiple files
+
+-- COMMAND ----------
+
+DROP TABLE IF EXISTS f1_raw.lap_times;
+CREATE TABLE IF NOT EXISTS f1_raw.lap_times(
+raceId INT,
+driverId INT,
+lap INT,
+position INT,
+time STRING,
+milliseconds INT
+)
+using csv
+OPTIONS(path "/mnt/formula1dlmr/raw/lap_times")
+
+-- COMMAND ----------
+
+SELECT COUNT(1) FROM f1_raw.lap_times;
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC #### Create qualifying table
+-- MAGIC - JSON file
+-- MAGIC - MultiLine JSON
+-- MAGIC - Multiple files
+
+-- COMMAND ----------
+
+DROP TABLE IF EXISTS f1_raw.qualifying;
+CREATE TABLE IF NOT EXISTS f1_raw.qualifying(
+qualifyId INT,
+raceId INT,
+driverId INT,
+constructorId INT,
+number INT,
+position INT,
+q1 STRING,
+q2 STRING,
+q3 STRING
+)
+using json
+OPTIONS(path "/mnt/formula1dlmr/raw/qualifying", multiLine true)
+
+-- COMMAND ----------
+
+SELECT * FROM f1_raw.qualifying
+
+-- COMMAND ----------
+
+DESC EXTENDED f1_raw.qualifying
