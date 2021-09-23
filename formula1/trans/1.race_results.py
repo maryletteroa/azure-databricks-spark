@@ -71,4 +71,5 @@ final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_presentation.
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM f1_presentation.race_results;
+# MAGIC SELECT * FROM f1_presentation.race_results
+# MAGIC WHERE race_year = 1953;
