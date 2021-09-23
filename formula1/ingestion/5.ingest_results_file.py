@@ -99,20 +99,61 @@ results_final_df = add_ingestion_date(results_final_df)
 # collects takes all the data and puts these in the driver node memory
 # use for small data not millions of rows
 
-for race_id_list in results_final_df.select("race_id").distinct().collect():
-  # check if table exists before dropping
+# check if table exists before dropping
   # takes a while specialy for the checkout data since this loops through all race_ids
-  if (spark._jsparkSession.catalog().tableExists("f1_processed.results")): 
-    spark.sql(f"ALTER TABLE f1_processed.results DROP IF EXISTS PARTITION (race_id = {race_id_list.race_id})")
+
+# for race_id_list in results_final_df.select("race_id").distinct().collect():
+#   if (spark._jsparkSession.catalog().tableExists("f1_processed.results")): 
+#     spark.sql(f"ALTER TABLE f1_processed.results DROP IF EXISTS PARTITION (race_id = {race_id_list.race_id})")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Method 1
 
 # COMMAND ----------
 
 # results_final_df.write.mode("overwrite")\
 # .partitionBy("race_id") \
 # .parquet(f"{processed_folder_path}/results")
-results_final_df.write.mode("append")\
-.partitionBy("race_id") \
-.format("parquet").saveAsTable("f1_processed.results")
+
+# results_final_df.write.mode("append")\ # use append to add rows table
+# .partitionBy("race_id") \
+# .format("parquet").saveAsTable("f1_processed.results")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Method 2
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- DROP TABLE f1_processed.results;
+
+# COMMAND ----------
+
+spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
+
+# dynamic means that insertInto will find the partitions and only replace those where new data is received
+# it will not overwrite the entire table
+# slightly more effecient than the for-loop, append method
+
+# COMMAND ----------
+
+# change the order so that race_id is last
+# this is required by insertInto statement
+results_final_df = results_final_df.select("result_id", "driver_id", "constructor_id", "number", "grid", "position", "position_text", "position_order", "points", "laps", "time", "milliseconds", "fastest_lap", "rank", "fastest_lap_time", "fastest_lap_speed", "data_source", "file_date", "ingestion_date", "race_id")
+
+
+# COMMAND ----------
+
+if (spark._jsparkSession.catalog().tableExists("f1_processed.results")):
+  # runs subsequently when table already exists
+  results_final_df.write.mode("overwrite").insertInto("f1_processed.results")
+else:
+  # runs the first time the notebook runs
+  results_final_df.write.mode("overwrite").partitionBy("race_id").format("parquet").saveAsTable("f1_processed.results") 
 
 # COMMAND ----------
 
