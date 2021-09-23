@@ -9,6 +9,11 @@ v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# COMMAND ----------
+
 # MAGIC %run "../includes/configuration"
 
 # COMMAND ----------
@@ -41,7 +46,7 @@ races_schema = StructType(fields = [StructField("raceId", IntegerType(), False),
 races_df = spark.read \
 .option("header", True) \
 .schema(races_schema) \
-.csv(f"{raw_folder_path}/races.csv")
+.csv(f"{raw_folder_path}/{v_file_date}/races.csv")
 
 # COMMAND ----------
 
@@ -65,7 +70,8 @@ races_df = races_df.select(col("raceId").alias("race_id"),
   col("name"),
   col("race_timestamp"),
 ) \
-.withColumn("data_source", lit(v_data_source))
+.withColumn("data_source", lit(v_data_source)) \
+.withColumn("file_date", lit(v_file_date))
 
 # COMMAND ----------
 

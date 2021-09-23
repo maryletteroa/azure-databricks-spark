@@ -10,6 +10,11 @@ v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_file_date", "2021-03-21")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# COMMAND ----------
+
 # MAGIC %run "../includes/configuration"
 
 # COMMAND ----------
@@ -20,17 +25,6 @@ v_data_source = dbutils.widgets.get("p_data_source")
 
 # MAGIC %md
 # MAGIC #### Step 1 - Read the CSV file using the spark dataframe reader
-
-# COMMAND ----------
-
-# read circuits.csv as a dataframe using DataFrame API
-# .option() enables additional arguments
-# using two options result in two spark jobs resulting in performance limitations
-
-circuits_df = spark.read \
-.option("header", True) \
-.option("inferSchema", True) \
-.csv(f"{raw_folder_path}/circuits.csv")
 
 # COMMAND ----------
 
@@ -62,7 +56,7 @@ circuits_schema = StructType(fields = [StructField("circuitId", IntegerType(), F
 circuits_df = spark.read \
 .option("header", True) \
 .schema(circuits_schema) \
-.csv(f"{raw_folder_path}/circuits.csv")
+.csv(f"{raw_folder_path}/{v_file_date}/circuits.csv")
 
 # COMMAND ----------
 
@@ -117,7 +111,8 @@ circuits_renamed_df  = circuits_selected_df.withColumnRenamed("circuitId", "circ
   .withColumnRenamed("lat", "latitude") \
   .withColumnRenamed("lng", "longitude") \
   .withColumnRenamed("alt", "altitude") \
-  .withColumn("data_source", lit(v_data_source))
+  .withColumn("data_source", lit(v_data_source)) \
+.withColumn("file_date", lit(v_file_date))
 
 # COMMAND ----------
 
