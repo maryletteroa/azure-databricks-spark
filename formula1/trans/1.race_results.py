@@ -46,7 +46,8 @@ results_df = spark.read.parquet(f"{processed_folder_path}/results") \
 .filter(f"file_date = '{v_file_date}'") \
 .withColumnRenamed("time", "race_time") \
 .withColumnRenamed("race_id", "result_race_id") \
-.select("result_id", "result_race_id", "driver_id", "constructor_id", "grid", "fastest_lap", "race_time", "points", "position")
+.withColumnRenamed("file_date", "result_file_date") \
+.select("result_id", "result_race_id", "driver_id", "constructor_id", "grid", "fastest_lap", "race_time", "points", "position", "result_file_date")
 
 # COMMAND ----------
 
@@ -67,7 +68,8 @@ final_df = add_ingestion_date(final_df) \
 # COMMAND ----------
 
 # re-arrange columns according to requirements
-final_df = final_df.select("race_id", "race_year", "race_name", "race_date", "circuit_location", "driver_name", "driver_number", "driver_nationality", "team", "grid", "fastest_lap", "race_time", "points", "position", "created_date")
+final_df = final_df.select("race_id", "race_year", "race_name", "race_date", "circuit_location", "driver_name", "driver_number", "driver_nationality", "team", "grid", "fastest_lap", "race_time", "points", "position", "created_date", "result_file_date") \
+.withColumnRenamed("result_file_date", "file_date")
 
 # COMMAND ----------
 
@@ -87,3 +89,8 @@ overwrite_partition(final_df, "f1_presentation.race_results", "race_id")
 # MAGIC FROM f1_presentation.race_results
 # MAGIC GROUP BY race_id
 # MAGIC ORDER BY race_id DESC
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- DROP TABLE f1_presentation.race_results;
