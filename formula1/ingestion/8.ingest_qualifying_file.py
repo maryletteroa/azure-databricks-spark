@@ -9,6 +9,15 @@ v_data_source = dbutils.widgets.get("p_data_source")
 
 # COMMAND ----------
 
+dbutils.widgets.text("p_file_date", "2021-03-28")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# COMMAND ----------
+
+v_file_date
+
+# COMMAND ----------
+
 # MAGIC %run "../includes/configuration"
 
 # COMMAND ----------
@@ -44,7 +53,7 @@ qualifying_schema = StructType(fields = [StructField("qualifyId", IntegerType(),
 qualifying_df = spark.read \
 .schema(qualifying_schema) \
 .option("multiLine", True) \
-.json(f"{raw_folder_path}/qualifying")
+.json(f"{raw_folder_path}/{v_file_date}/qualifying")
 
 # COMMAND ----------
 
@@ -63,7 +72,8 @@ final_df = qualifying_df.withColumnRenamed("driverId", "driver_id") \
 .withColumnRenamed("raceId", "race_id") \
 .withColumnRenamed("driverId", "driver_id") \
 .withColumnRenamed("constructorId", "constructor_id") \
-.withColumn("data_source", lit(v_data_source))
+.withColumn("data_source", lit(v_data_source)) \
+.withColumn("file_date", lit(v_file_date))
 
 # COMMAND ----------
 
@@ -77,11 +87,23 @@ final_df = add_ingestion_date(final_df)
 # COMMAND ----------
 
 # final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/qualifying")
-final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.qualifying")
+# final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.qualifying")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/lap_times"))
+overwrite_partition(final_df, "f1_processed.qualifying", "race_id")
+
+# COMMAND ----------
+
+display(spark.read.parquet(f"{processed_folder_path}/qualifying"))
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT race_id, COUNT(1)
+# MAGIC FROM f1_processed.qualifying
+# MAGIC GROUP BY race_id
+# MAGIC ORDER BY race_id DESC;
 
 # COMMAND ----------
 
