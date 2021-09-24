@@ -46,10 +46,6 @@ mount_adls("raw")
 
 # COMMAND ----------
 
-dbutils.fs.ls("/mnt/formula1dlmr/raw")
-
-# COMMAND ----------
-
 mount_adls("processed")
 
 # COMMAND ----------
@@ -59,6 +55,10 @@ dbutils.fs.ls("/mnt/formula1dlmr/processed")
 # COMMAND ----------
 
 mount_adls("presentation")
+
+# COMMAND ----------
+
+mount_adls("demo")
 
 # COMMAND ----------
 
