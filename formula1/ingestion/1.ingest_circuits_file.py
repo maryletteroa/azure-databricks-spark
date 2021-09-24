@@ -129,7 +129,7 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 5 - Write data to datalake as parquet
+# MAGIC #### Step 5 - Write data to datalake as ~parquet~ delta lake
 
 # COMMAND ----------
 
@@ -138,11 +138,7 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 # circuits_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/circuits")
 
 # delete the data created without the save as method
-circuits_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.circuits")
-
-# COMMAND ----------
-
-display(spark.read.parquet(f"{processed_folder_path}/circuits"))
+circuits_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.circuits")
 
 # COMMAND ----------
 
