@@ -129,7 +129,7 @@ circuits_final_df = add_ingestion_date(circuits_renamed_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 5 - Write data to datalake as ~parquet~ delta lake
+# MAGIC #### Step 5 - Write data to datalake as ~~parquet~~ delta table format
 
 # COMMAND ----------
 

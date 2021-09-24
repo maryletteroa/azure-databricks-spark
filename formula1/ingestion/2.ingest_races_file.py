@@ -80,7 +80,7 @@ races_final_df = add_ingestion_date(races_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 3 - Write output to processed container in parquet format
+# MAGIC #### Step 3 - Write output to processed container in ~~parquet~~ delta table format
 
 # COMMAND ----------
 
@@ -91,11 +91,12 @@ races_final_df = add_ingestion_date(races_df)
 #   .partitionBy("race_year") \
 #   .parquet(f"{processed_folder_path}/races")
 
-races_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.races")
+races_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.races")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/races"))
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.races;
 
 # COMMAND ----------
 

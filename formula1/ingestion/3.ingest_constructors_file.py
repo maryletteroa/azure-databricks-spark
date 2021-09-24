@@ -77,16 +77,17 @@ constructor_final_df = add_ingestion_date(constructor_dropped_df \
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 4 - Write output to parquet file
+# MAGIC #### Step 4 - Write output to ~~parquet~~ delta table format
 
 # COMMAND ----------
 
 # constructor_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/constructors")
-constructor_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.constructors")
+constructor_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.constructors")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/constructors"))
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.constructors;
 
 # COMMAND ----------
 

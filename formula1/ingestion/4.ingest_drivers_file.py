@@ -101,16 +101,17 @@ drivers_final_df = drivers_with_columns_df.drop(col("url"))
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 4 - Write to output to processed container in parquet format
+# MAGIC #### Step 4 - Write to output to processed container in ~~parquet~~ delta table format
 
 # COMMAND ----------
 
 # drivers_final_df.write.mode("overwrite").parquet(f"{processed_folder_path}/drivers")
-drivers_final_df.write.mode("overwrite").format("parquet").saveAsTable("f1_processed.drivers")
+drivers_final_df.write.mode("overwrite").format("delta").saveAsTable("f1_processed.drivers")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/drivers"))
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.drivers;
 
 # COMMAND ----------
 

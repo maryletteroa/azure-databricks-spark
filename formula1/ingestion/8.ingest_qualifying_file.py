@@ -69,6 +69,7 @@ from pyspark.sql.functions import lit
 # COMMAND ----------
 
 final_df = qualifying_df.withColumnRenamed("driverId", "driver_id") \
+.withColumnRenamed("qualifyId", "qualify_id") \
 .withColumnRenamed("raceId", "race_id") \
 .withColumnRenamed("driverId", "driver_id") \
 .withColumnRenamed("constructorId", "constructor_id") \
@@ -82,7 +83,7 @@ final_df = add_ingestion_date(final_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 3 - Write to output to processed container in parquet format
+# MAGIC #### Step 3 - Write to output to processed container in ~~parquet format~~ delta table
 
 # COMMAND ----------
 
@@ -91,11 +92,17 @@ final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
-overwrite_partition(final_df, "f1_processed.qualifying", "race_id")
+# overwrite_partition(final_df, "f1_processed.qualifying", "race_id")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/qualifying"))
+merge_condition = "tgt.qualify_id = src.qualify_id"
+merge_delta_data(final_df, "f1_processed", "qualifying", processed_folder_path, merge_condition, "race_id")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.qualifying
 
 # COMMAND ----------
 

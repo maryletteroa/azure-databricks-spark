@@ -77,7 +77,7 @@ final_df = add_ingestion_date(final_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC #### Step 3 - Write to output to processed container in parquet format
+# MAGIC #### Step 3 - Write to output to processed container in ~~parquet~~ delta table format
 
 # COMMAND ----------
 
@@ -86,11 +86,17 @@ final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
-overwrite_partition(final_df, "f1_processed.lap_times", "race_id")
+# overwrite_partition(final_df, "f1_processed.lap_times", "race_id")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/lap_times"))
+merge_condition = "tgt.driver_id = src.driver_id AND tgt.race_id = src.race_id AND tgt.lap = src.lap"
+merge_delta_data(final_df, "f1_processed", "lap_times", processed_folder_path, merge_condition, "race_id")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.lap_times
 
 # COMMAND ----------
 

@@ -91,6 +91,15 @@ results_final_df = add_ingestion_date(results_final_df)
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC De-dupe the dataframe
+
+# COMMAND ----------
+
+results_deduped_df = results_final_df.dropDuplicates(["race_id", "driver_id"])
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC #### Step 3 - Write to parquet file
 
@@ -162,12 +171,12 @@ results_final_df = add_ingestion_date(results_final_df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Write as delta table
+# MAGIC #### Step 4 - Write as delta table
 
 # COMMAND ----------
 
 merge_condition = "tgt.result_id = src.result_id AND tgt.race_id = src.race_id"
-merge_delta_data(results_final_df, "f1_processed", "results", processed_folder_path, merge_condition, "race_id")
+merge_delta_data(results_deduped_df, "f1_processed", "results", processed_folder_path, merge_condition, "race_id")
 
 # COMMAND ----------
 
@@ -176,6 +185,25 @@ merge_delta_data(results_final_df, "f1_processed", "results", processed_folder_p
 # MAGIC FROM f1_processed.results
 # MAGIC GROUP BY race_id
 # MAGIC ORDER BY race_id DESC;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- check if there are duplicates in the results file
+# MAGIC -- a driver cannot race in more than one race or team in one day!
+# MAGIC -- this was an inherent problem of the dataset
+# MAGIC 
+# MAGIC SELECT race_id, driver_id, COUNT(1)
+# MAGIC FROM f1_processed.results
+# MAGIC GROUP BY race_id, driver_id
+# MAGIC HAVING COUNT(1) > 1
+# MAGIC ORDER BY race_id, driver_id DESC;
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- driver racing in two teams
+# MAGIC SELECT * FROM f1_processed.results WHERE race_id = 540 AND driver_id = 229;
 
 # COMMAND ----------
 

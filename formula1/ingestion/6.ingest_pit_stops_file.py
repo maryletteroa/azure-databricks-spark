@@ -87,11 +87,26 @@ final_df = add_ingestion_date(final_df)
 
 # COMMAND ----------
 
-overwrite_partition(final_df, "f1_processed.pit_stops", "race_id")
+# overwrite_partition(final_df, "f1_processed.pit_stops", "race_id")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/pit_stops"))
+# MAGIC %md
+# MAGIC #### Step 4 - Write as delta table
+
+# COMMAND ----------
+
+display(final_df)
+
+# COMMAND ----------
+
+merge_condition = "tgt.driver_id = src.driver_id AND tgt.race_id = src.race_id AND tgt.stop = src.stop"
+merge_delta_data(final_df, "f1_processed", "pit_stops", processed_folder_path, merge_condition, "race_id")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM f1_processed.pit_stops
 
 # COMMAND ----------
 
