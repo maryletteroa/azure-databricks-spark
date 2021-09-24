@@ -31,3 +31,24 @@ def df_column_to_list(input_df, column_name):
   
   column_value_list = [row[column_name] for row in df_row_list]
   return column_value_list
+
+# COMMAND ----------
+
+#check based on primary record
+# always speficy the merge column so queries will be quicker (merge is an expensive operation)
+# additional race_id or partitioncolumn could help spark find the right partition
+# dynamic when using variable, static when e.g. using tgt.race_id = 1053
+
+def merge_delta_data(input_df, db_name, table_name, folder_path, merge_condition, partition_column):
+  spark.conf.set("spark.databricks.optimizer.dynamicPartionPruning","true")
+  from delta.tables import DeltaTable
+  if (spark._jsparkSession.catalog().tableExists(f"{db_name}.{table_name}")):
+    deltaTable = DeltaTable.forPath(spark, f"{folder_path}/{table_name}")
+    deltaTable.alias("tgt").merge(
+      input_df.alias("src"),
+      merge_condition) \
+    .whenMatchedUpdateAll() \
+    .whenNotMatchedInsertAll() \
+    .execute()
+  else:
+    input_df.write.mode("overwrite").partitionBy(partition_column).format("delta").saveAsTable(f"{db_name}.{table_name}")
