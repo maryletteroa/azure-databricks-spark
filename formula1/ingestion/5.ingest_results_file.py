@@ -157,11 +157,17 @@ results_final_df = add_ingestion_date(results_final_df)
 
 # funcationalize
 
-overwrite_partition(results_final_df, "f1_processed.results", "race_id")
+# overwrite_partition(results_final_df, "f1_processed.results", "race_id")
 
 # COMMAND ----------
 
-display(spark.read.parquet(f"{processed_folder_path}/results"))
+# MAGIC %md
+# MAGIC Write as delta table
+
+# COMMAND ----------
+
+merge_condition = "tgt.result_id = src.result_id AND tgt.race_id = src.race_id"
+merge_delta_data(results_final_df, "f1_processed", "results", processed_folder_path, merge_condition, "race_id")
 
 # COMMAND ----------
 
