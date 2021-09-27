@@ -17,12 +17,8 @@ v_file_date = dbutils.widgets.get("p_file_date")
 
 # COMMAND ----------
 
-# gives all the distinct race years
-race_results_list = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
-.filter(f"file_date = '{v_file_date}'") \
-.select("race_year")\
-.distinct() \
-.collect()
+race_results_df = spark.read.format("delta").load(f"{presentation_folder_path}/race_results") \
+.filter(f"file_date = '{v_file_date}'") 
 
 # COMMAND ----------
 
